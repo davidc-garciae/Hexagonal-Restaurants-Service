@@ -1,0 +1,59 @@
+graph TB
+    %% HU-002: Create Restaurant (high contrast)
+
+    subgraph "Input Adapters"
+        REST["🌐 RestaurantRestController\nPOST /api/v1/restaurants"]
+    end
+
+    subgraph "Application Layer"
+        HANDLER["📋 RestaurantHandler"]
+        REQ_DTO["📤 RestaurantCreateRequestDto"]
+        RES_DTO["📥 RestaurantResponseDto"]
+        REQ_MAP["🔄 IRestaurantRequestMapper"]
+        RES_MAP["🔄 IRestaurantResponseMapper"]
+    end
+
+    subgraph "Domain Core"
+        MODEL["📊 RestaurantModel"]
+        USECASE["⚙️ RestaurantUseCase"]
+        API_PORT["🔌 IRestaurantServicePort"]
+        PERSIST_PORT["🔌 IRestaurantPersistencePort"]
+        USER_PORT["🔌 IUserServicePort"]
+    end
+
+    subgraph "Output Adapters"
+        JPA_ADAPTER["💾 RestaurantJpaAdapter"]
+        ENTITY["🗃️ RestaurantEntity"]
+        REPO["🏪 IRestaurantRepository"]
+        ENTITY_MAP["🔄 IRestaurantEntityMapper"]
+        USERS_ADAPTER["👥 UsersServiceAdapter"]
+        DB[("🗄️ PostgreSQL")]
+    end
+
+    REST --> HANDLER
+    HANDLER --> REQ_MAP
+    REQ_MAP --> MODEL
+    MODEL --> API_PORT
+    API_PORT --> USECASE
+    USECASE --> PERSIST_PORT
+    USECASE --> USER_PORT
+    PERSIST_PORT --> JPA_ADAPTER
+    JPA_ADAPTER --> ENTITY_MAP
+    ENTITY_MAP --> ENTITY
+    ENTITY --> REPO
+    REPO --> DB
+    USECASE --> |"validations"| USECASE
+    USECASE --> |"DomainException on errors"| REST
+    USECASE --> |"created model"| HANDLER
+    HANDLER --> RES_MAP
+    RES_MAP --> REST
+
+    %% Styles (high contrast)
+    classDef domain fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000000
+    classDef app fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000000
+    classDef infra fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000000
+    classDef io fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000000
+
+    class MODEL,USECASE,API_PORT,PERSIST_PORT,USER_PORT domain
+    class HANDLER,REQ_DTO,RES_DTO,REQ_MAP,RES_MAP app
+    class REST,JPA_ADAPTER,ENTITY,REPO,ENTITY_MAP,USERS_ADAPTER,DB infra

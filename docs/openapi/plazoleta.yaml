@@ -1,120 +1,56 @@
 openapi: 3.0.3
 info:
-  title: plazoleta-service API
+  title: restaurants-service API
   version: 1.0.0
-  description: API para restaurantes y platos
+  description: API for restaurants and dishes
 servers:
   - url: http://localhost:8082
 security:
   - bearerAuth: []
 paths:
-  /api/v1/restaurantes:
+  /api/v1/restaurants:
     post:
-      tags: [Restaurantes]
-      summary: Crear restaurante (ADMIN)
+      tags: [Restaurants]
+      summary: Create restaurant (ADMIN)
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RestauranteRequest'
+              $ref: '#/components/schemas/RestaurantCreateRequest'
       responses:
         '201':
-          description: Creado
-    get:
-      tags: [Restaurantes]
-      summary: Listar restaurantes
-      parameters:
-        - in: query
-          name: page
-          schema: { type: integer, default: 0 }
-        - in: query
-          name: size
-          schema: { type: integer, default: 10 }
-      responses:
-        '200':
-          description: OK
+          description: Created
+          headers:
+            Location:
+              description: URI of the created resource
+              schema: { type: string }
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RestauranteListadoResponse'
-  /api/v1/platos:
-    post:
-      tags: [Platos]
-      summary: Crear plato (OWNER)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PlatoRequest'
-      responses:
-        '201': { description: Creado }
-  /api/v1/platos/{id}:
-    put:
-      tags: [Platos]
-      summary: Modificar plato (OWNER)
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer, format: int64 }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PlatoUpdateRequest'
-      responses:
-        '200': { description: OK }
-  /api/v1/platos/{id}/estado:
-    patch:
-      tags: [Platos]
-      summary: Habilitar/Deshabilitar plato (OWNER)
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer, format: int64 }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                activo: { type: boolean }
-      responses:
-        '200': { description: OK }
-  /api/v1/platos/restaurante/{id}:
-    get:
-      tags: [Platos]
-      summary: Listar platos por restaurante
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer, format: int64 }
-        - in: query
-          name: categoria
-          schema: { type: string, enum: [ENTRADA, PRINCIPAL, POSTRE, BEBIDA] }
-        - in: query
-          name: page
-          schema: { type: integer, default: 0 }
-        - in: query
-          name: size
-          schema: { type: integer, default: 10 }
-      responses:
-        '200':
-          description: OK
+                $ref: '#/components/schemas/RestaurantResponse'
+        '400':
+          description: Validation error
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PlatoResponse'
+                $ref: '#/components/schemas/ErrorResponse'
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden (requires ADMIN) }
+        '404':
+          description: Owner not found or not OWNER role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: NIT already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   securitySchemes:
     bearerAuth:
@@ -122,41 +58,50 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    RestauranteRequest:
+    RestaurantCreateRequest:
       type: object
-      required: [nombre, nit, direccion, telefono, urlLogo, propietarioId]
+      required: [name, nit, address, phone, logoUrl, ownerId]
       properties:
-        nombre: { type: string }
-        nit: { type: string }
-        direccion: { type: string }
-        telefono: { type: string, maxLength: 13 }
-        urlLogo: { type: string }
-        propietarioId: { type: integer, format: int64 }
-    RestauranteListadoResponse:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: "^(?!\\d+$).+$"
+        nit:
+          type: string
+          minLength: 1
+          maxLength: 20
+          pattern: "^\\d+$"
+        address:
+          type: string
+          maxLength: 200
+        phone:
+          type: string
+          maxLength: 13
+          pattern: "^\\+?\\d{1,13}$"
+        logoUrl:
+          type: string
+          format: uri
+          maxLength: 255
+        ownerId:
+          type: integer
+          format: int64
+    RestaurantResponse:
       type: object
-      properties:
-        nombre: { type: string }
-        urlLogo: { type: string }
-    PlatoRequest:
-      type: object
-      required: [nombre, precio, descripcion, urlImagen, categoria, restauranteId]
-      properties:
-        nombre: { type: string }
-        precio: { type: number, format: double, minimum: 1 }
-        descripcion: { type: string }
-        urlImagen: { type: string }
-        categoria: { type: string, enum: [ENTRADA, PRINCIPAL, POSTRE, BEBIDA] }
-        restauranteId: { type: integer, format: int64 }
-    PlatoUpdateRequest:
-      type: object
-      properties:
-        precio: { type: number, format: double, minimum: 1 }
-        descripcion: { type: string }
-    PlatoResponse:
-      allOf:
-        - $ref: '#/components/schemas/PlatoRequest'
       properties:
         id: { type: integer, format: int64 }
-        activo: { type: boolean }
+        name: { type: string }
+        nit: { type: string }
+        address: { type: string }
+        phone: { type: string }
+        logoUrl: { type: string }
+        ownerId: { type: integer, format: int64 }
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp: { type: string, format: date-time }
+        path: { type: string }
+        message: { type: string }
+        code: { type: string }
 
 
