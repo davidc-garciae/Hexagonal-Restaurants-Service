@@ -2,6 +2,7 @@ package com.pragma.powerup.infrastructure.input.rest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -68,6 +69,36 @@ class PlateRestControllerWebMvcTest {
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
+    }
+
+    @Test
+    @DisplayName("PUT /api/v1/plates/{id} should return 200 OK when valid")
+    void shouldUpdatePlate() throws Exception {
+        var request = new com.pragma.powerup.application.dto.request.PlateUpdateRequestDto();
+        request.setPrice(20);
+        request.setDescription("new desc");
+
+        PlateResponseDto response = new PlateResponseDto();
+        response.setId(1L);
+        response.setName("A");
+        response.setPrice(20);
+        response.setDescription("new desc");
+        response.setImageUrl("http://img");
+        response.setCategory(com.pragma.powerup.domain.model.PlateCategory.ENTRADA);
+        response.setActive(true);
+        response.setRestaurantId(5L);
+
+        Mockito.when(plateHandler.update(any(), any(), any())).thenReturn(response);
+
+        mockMvc
+                .perform(
+                        put("/api/v1/plates/{id}", 1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("X-User-Id", "10")
+                                .header("X-User-Email", "owner@test.com")
+                                .header("X-User-Role", "OWNER")
+                                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
     }
 
     @TestConfiguration

@@ -5,7 +5,10 @@ import com.pragma.powerup.domain.model.PlateModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(
+    componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IPlateResponseMapper {
-    PlateResponseDto toDto(PlateModel model);
+  PlateResponseDto toDto(PlateModel model);
 }

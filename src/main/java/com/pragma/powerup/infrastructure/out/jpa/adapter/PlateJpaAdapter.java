@@ -23,4 +23,9 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
         PlateEntity saved = repository.save(mapper.toEntity(plate));
         return mapper.toModel(saved);
     }
+
+    @Override
+    public PlateModel findById(Long id) {
+        return repository.findById(id).map(mapper::toModel).orElse(null);
+    }
 }

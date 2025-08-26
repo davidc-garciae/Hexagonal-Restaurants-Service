@@ -6,4 +6,6 @@ public interface IPlatePersistencePort {
     boolean existsByNameAndRestaurantId(String name, Long restaurantId);
 
     PlateModel save(PlateModel plate);
+
+    PlateModel findById(Long id);
 }

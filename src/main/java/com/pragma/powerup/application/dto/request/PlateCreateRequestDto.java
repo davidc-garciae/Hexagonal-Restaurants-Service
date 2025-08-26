@@ -14,26 +14,24 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PlateCreateRequestDto {
-    @NotBlank
-    @Size(max = 100)
-    private String name;
+  @NotBlank
+  @Size(max = 100)
+  private String name;
 
-    @NotNull
-    @Positive
-    @Min(1)
-    private Integer price;
+  @NotNull
+  @Positive
+  @Min(1)
+  private Integer price;
 
-    @NotBlank
-    @Size(max = 1000)
-    private String description;
+  @NotBlank
+  @Size(max = 1000)
+  private String description;
 
-    @NotBlank
-    @Size(max = 255)
-    private String imageUrl;
+  @NotBlank
+  @Size(max = 255)
+  private String imageUrl;
 
-    @NotNull
-    private PlateCategory category;
+  @NotNull private PlateCategory category;
 
-    @NotNull
-    private Long restaurantId;
+  @NotNull private Long restaurantId;
 }

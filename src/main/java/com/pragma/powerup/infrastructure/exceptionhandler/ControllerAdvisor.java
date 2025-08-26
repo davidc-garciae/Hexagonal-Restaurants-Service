@@ -29,6 +29,10 @@ public class ControllerAdvisor {
       status = HttpStatus.CONFLICT;
     } else if (msg.contains("OWNER role required")) {
       status = HttpStatus.NOT_FOUND;
+    } else if (msg.toLowerCase().contains("not found")) {
+      status = HttpStatus.NOT_FOUND;
+    } else if (msg.toLowerCase().contains("only the restaurant owner can")) {
+      status = HttpStatus.FORBIDDEN;
     }
     return ResponseEntity.status(status).body(Collections.singletonMap(MESSAGE, msg));
   }

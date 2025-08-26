@@ -23,41 +23,41 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class BeanConfiguration {
-    private final IRestaurantRepository restaurantRepository;
-    private final IRestaurantEntityMapper restaurantEntityMapper;
+  private final IRestaurantRepository restaurantRepository;
+  private final IRestaurantEntityMapper restaurantEntityMapper;
 
-    // added fields
-    private final IPlateRepository plateRepository;
-    private final IPlateEntityMapper plateEntityMapper;
+  // added fields
+  private final IPlateRepository plateRepository;
+  private final IPlateEntityMapper plateEntityMapper;
 
-    @Bean
-    public IRestaurantPersistencePort restaurantPersistencePort() {
-        return new RestaurantJpaAdapter(restaurantRepository, restaurantEntityMapper);
-    }
+  @Bean
+  public IRestaurantPersistencePort restaurantPersistencePort() {
+    return new RestaurantJpaAdapter(restaurantRepository, restaurantEntityMapper);
+  }
 
-    @Bean
-    public IUserServicePort userServicePort() {
-        return new UsersServiceAdapter();
-    }
+  @Bean
+  public IUserServicePort userServicePort() {
+    return new UsersServiceAdapter();
+  }
 
-    @Bean
-    public IRestaurantServicePort restaurantServicePort() {
-        return new RestaurantUseCase(restaurantPersistencePort(), userServicePort());
-    }
+  @Bean
+  public IRestaurantServicePort restaurantServicePort() {
+    return new RestaurantUseCase(restaurantPersistencePort(), userServicePort());
+  }
 
-    // added beans
-    @Bean
-    public IRestaurantQueryPort restaurantQueryPort() {
-        return new RestaurantQueryJpaAdapter(restaurantRepository, restaurantEntityMapper);
-    }
+  // added beans
+  @Bean
+  public IRestaurantQueryPort restaurantQueryPort() {
+    return new RestaurantQueryJpaAdapter(restaurantRepository, restaurantEntityMapper);
+  }
 
-    @Bean
-    public IPlatePersistencePort platePersistencePort() {
-        return new PlateJpaAdapter(plateRepository, plateEntityMapper);
-    }
+  @Bean
+  public IPlatePersistencePort platePersistencePort() {
+    return new PlateJpaAdapter(plateRepository, plateEntityMapper);
+  }
 
-    @Bean
-    public IPlateServicePort plateServicePort() {
-        return new PlateUseCase(platePersistencePort(), restaurantQueryPort());
-    }
+  @Bean
+  public IPlateServicePort plateServicePort() {
+    return new PlateUseCase(platePersistencePort(), restaurantQueryPort());
+  }
 }

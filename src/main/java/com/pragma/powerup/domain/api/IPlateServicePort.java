@@ -4,4 +4,6 @@ import com.pragma.powerup.domain.model.PlateModel;
 
 public interface IPlateServicePort {
     PlateModel createPlate(PlateModel plate, Long ownerId);
+
+    PlateModel updatePlate(Long plateId, Integer price, String description, Long ownerId);
 }

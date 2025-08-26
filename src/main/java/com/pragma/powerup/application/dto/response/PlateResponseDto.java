@@ -9,12 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PlateResponseDto {
-    private Long id;
-    private String name;
-    private Integer price;
-    private String description;
-    private String imageUrl;
-    private PlateCategory category;
-    private boolean active;
-    private Long restaurantId;
+  private Long id;
+  private String name;
+  private Integer price;
+  private String description;
+  private String imageUrl;
+  private PlateCategory category;
+  private boolean active;
+  private Long restaurantId;
 }
