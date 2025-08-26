@@ -18,6 +18,7 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	byteBuddyAgent
 }
 
 repositories {
@@ -78,6 +79,9 @@ dependencies {
 		implementation('net.minidev:json-smart:2.5.1') { because 'Avoid vulnerable transitive versions' }
 		implementation('org.xmlunit:xmlunit-core:2.9.1') { because 'Avoid vulnerable transitive versions' }
 	}
+
+	// Explicit agent for Mockito inline mock maker (future-proof JDK changes)
+	byteBuddyAgent "net.bytebuddy:byte-buddy-agent:1.15.11"
 }
 
 tasks.named('test') {
@@ -108,6 +112,11 @@ tasks.register('jacocoCoverageVerification', JacocoCoverageVerification) {
 }
 
 check.dependsOn jacocoCoverageVerification
+
+// Load Byte Buddy agent explicitly for test tasks
+tasks.withType(Test).configureEach {
+	jvmArgs "-javaagent:${configurations.byteBuddyAgent.singleFile}"
+}
 
 spotless {
 	java {

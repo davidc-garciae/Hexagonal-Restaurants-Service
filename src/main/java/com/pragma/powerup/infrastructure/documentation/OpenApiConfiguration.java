@@ -19,7 +19,7 @@ public class OpenApiConfiguration {
         .components(new Components())
         .info(
             new Info()
-                .title("Hexagonal Power-up API")
+                .title("Hexagonal Restaurant Service API")
                 .version(appVersion)
                 .description(appDescription)
                 .termsOfService("http://swagger.io/terms/")

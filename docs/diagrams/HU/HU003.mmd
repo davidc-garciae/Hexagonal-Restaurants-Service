@@ -1,0 +1,71 @@
+graph TB
+    %% HU-003: Create Plate (high contrast)
+
+    subgraph "Input Adapters"
+        REST["🌐 PlateRestController\nPOST /api/v1/plates"]
+    end
+
+    subgraph "Application Layer"
+        HANDLER["📋 PlateHandler"]
+        REQ_DTO["📤 PlateCreateRequestDto"]
+        RES_DTO["📥 PlateResponseDto"]
+        REQ_MAP["🔄 IPlateRequestMapper"]
+        RES_MAP["🔄 IPlateResponseMapper"]
+    end
+
+    subgraph "Domain Core"
+        MODEL["📊 PlateModel"]
+        CATEGORY["🏷️ PlateCategory"]
+        USECASE["⚙️ PlateUseCase"]
+        API_PORT["🔌 IPlateServicePort"]
+        PERSIST_PORT["🔌 IPlatePersistencePort"]
+        REST_QUERY_PORT["🔌 IRestaurantQueryPort"]
+    end
+
+    subgraph "Output Adapters"
+        JPA_ADAPTER["💾 PlateJpaAdapter"]
+        ENTITY["🗃️ PlateEntity"]
+        REPO["🏪 IPlateRepository"]
+        ENTITY_MAP["🔄 IPlateEntityMapper"]
+        REST_QUERY_ADAPTER["🏪 RestaurantQueryJpaAdapter"]
+        REST_REPO["🏪 IRestaurantRepository"]
+        REST_MAP["🔄 IRestaurantEntityMapper"]
+        DB[("🗄️ PostgreSQL")]
+    end
+
+    %% Flow
+    REST --> HANDLER
+    HANDLER --> REQ_MAP
+    REQ_MAP --> MODEL
+    MODEL --> API_PORT
+    API_PORT --> USECASE
+    USECASE --> PERSIST_PORT
+    USECASE --> REST_QUERY_PORT
+    PERSIST_PORT --> JPA_ADAPTER
+    JPA_ADAPTER --> ENTITY_MAP
+    ENTITY_MAP --> ENTITY
+    ENTITY --> REPO
+    REPO --> DB
+    REST_QUERY_PORT --> REST_QUERY_ADAPTER
+    REST_QUERY_ADAPTER --> REST_REPO
+    REST_QUERY_ADAPTER --> REST_MAP
+    REST_REPO --> DB
+
+    %% Notes
+    USECASE --> |"validations: price>0, required, owner matches"| USECASE
+    USECASE --> |"DomainException on errors"| REST
+    USECASE --> |"created model"| HANDLER
+    HANDLER --> RES_MAP
+    RES_MAP --> REST
+
+    %% Styles (high contrast)
+    classDef domain fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000000
+    classDef app fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000000
+    classDef infra fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000000
+    classDef io fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000000
+
+    class MODEL,CATEGORY,USECASE,API_PORT,PERSIST_PORT,REST_QUERY_PORT domain
+    class HANDLER,REQ_DTO,RES_DTO,REQ_MAP,RES_MAP app
+    class REST,JPA_ADAPTER,ENTITY,REPO,ENTITY_MAP,REST_QUERY_ADAPTER,REST_REPO,REST_MAP,DB infra
+
+
