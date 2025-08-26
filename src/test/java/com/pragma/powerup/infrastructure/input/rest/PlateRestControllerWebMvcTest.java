@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -93,6 +94,35 @@ class PlateRestControllerWebMvcTest {
         mockMvc
                 .perform(
                         put("/api/v1/plates/{id}", 1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("X-User-Id", "10")
+                                .header("X-User-Email", "owner@test.com")
+                                .header("X-User-Role", "OWNER")
+                                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("PATCH /api/v1/plates/{id}/status should return 200 OK when valid")
+    void shouldUpdatePlateStatus() throws Exception {
+        var request = new com.pragma.powerup.application.dto.request.PlateStatusUpdateRequestDto();
+        request.setActive(false);
+
+        PlateResponseDto response = new PlateResponseDto();
+        response.setId(1L);
+        response.setName("A");
+        response.setPrice(20);
+        response.setDescription("new desc");
+        response.setImageUrl("http://img");
+        response.setCategory(com.pragma.powerup.domain.model.PlateCategory.ENTRADA);
+        response.setActive(false);
+        response.setRestaurantId(5L);
+
+        Mockito.when(plateHandler.updateStatus(any(), any(), any())).thenReturn(response);
+
+        mockMvc
+                .perform(
+                        patch("/api/v1/plates/{id}/status", 1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("X-User-Id", "10")
                                 .header("X-User-Email", "owner@test.com")

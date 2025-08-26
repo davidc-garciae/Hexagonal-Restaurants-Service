@@ -147,6 +147,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/plates/{id}/status:
+    patch:
+      tags: [Plates]
+      summary: Enable/Disable plate (OWNER of the restaurant)
+      description: Only the restaurant owner can enable/disable plates of their restaurant.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlateStatusUpdateRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlateResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401': { description: Unauthorized }
+        '403':
+          description: Forbidden (requires OWNER and ownership of the restaurant)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Plate not found or Restaurant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -241,6 +286,13 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
+
+    PlateStatusUpdateRequest:
+      type: object
+      required: [active]
+      properties:
+        active:
+          type: boolean
 
     PlateCategory:
       type: string

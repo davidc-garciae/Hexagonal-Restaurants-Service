@@ -1,6 +1,7 @@
 package com.pragma.powerup.application.handler.impl;
 
 import com.pragma.powerup.application.dto.request.PlateCreateRequestDto;
+import com.pragma.powerup.application.dto.request.PlateStatusUpdateRequestDto;
 import com.pragma.powerup.application.dto.request.PlateUpdateRequestDto;
 import com.pragma.powerup.application.dto.response.PlateResponseDto;
 import com.pragma.powerup.application.handler.IPlateHandler;
@@ -31,6 +32,13 @@ public class PlateHandler implements IPlateHandler {
     public PlateResponseDto update(Long plateId, PlateUpdateRequestDto requestDto, Long ownerId) {
         PlateModel updated = plateServicePort.updatePlate(
                 plateId, requestDto.getPrice(), requestDto.getDescription(), ownerId);
+        return responseMapper.toDto(updated);
+    }
+
+    @Override
+    public PlateResponseDto updateStatus(
+            Long plateId, PlateStatusUpdateRequestDto requestDto, Long ownerId) {
+        PlateModel updated = plateServicePort.setPlateActive(plateId, requestDto.getActive(), ownerId);
         return responseMapper.toDto(updated);
     }
 }

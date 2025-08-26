@@ -1,0 +1,53 @@
+graph TB
+    %% HU-007: Enable/Disable Plate (high contrast)
+
+    subgraph "Input Adapters"
+        REST["🌐 PlateRestController\nPATCH /api/v1/plates/{id}/status"]
+    end
+
+    subgraph "Application Layer"
+        HANDLER["📋 PlateHandler"]
+        REQ_DTO["📤 PlateStatusUpdateRequestDto"]
+        RES_DTO["📥 PlateResponseDto"]
+        RES_MAP["🔄 IPlateResponseMapper"]
+    end
+
+    subgraph "Domain Core"
+        MODEL["📊 PlateModel"]
+        USECASE["⚙️ PlateUseCase.setPlateActive"]
+        API_PORT["🔌 IPlateServicePort"]
+        SPI_PERSIST["🔌 IPlatePersistencePort"]
+        SPI_REST_QUERY["🔌 IRestaurantQueryPort"]
+    end
+
+    subgraph "Output Adapters"
+        JPA_ADAPTER["💾 PlateJpaAdapter"]
+        REPO["🏪 IPlateRepository"]
+        DB[("🗄️ PostgreSQL")]
+    end
+
+    REST --> HANDLER
+    HANDLER --> REQ_DTO
+    HANDLER --> API_PORT
+    API_PORT --> USECASE
+    USECASE --> SPI_PERSIST
+    USECASE --> SPI_REST_QUERY
+    SPI_PERSIST --> JPA_ADAPTER
+    JPA_ADAPTER --> REPO
+    REPO --> DB
+    USECASE --> HANDLER
+    HANDLER --> RES_MAP
+    RES_MAP --> REST
+
+    %% Notes
+    USECASE --> |"validations: owner matches"| USECASE
+    USECASE --> |"DomainException on errors"| REST
+
+    %% Styles (high contrast)
+    classDef domain fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000000
+    classDef app fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000000
+    classDef infra fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000000
+
+    class MODEL,USECASE,API_PORT,SPI_PERSIST,SPI_REST_QUERY domain
+    class HANDLER,REQ_DTO,RES_DTO,RES_MAP app
+    class REST,JPA_ADAPTER,REPO,DB infra

@@ -89,4 +89,26 @@ public class PlateUseCase implements IPlateServicePort {
 
         return platePersistencePort.save(existing);
     }
+
+    @Override
+    public PlateModel setPlateActive(Long plateId, boolean active, Long ownerId) {
+        if (plateId == null) {
+            throw new DomainException("plateId is required");
+        }
+        PlateModel existing = platePersistencePort.findById(plateId);
+        if (existing == null) {
+            throw new DomainException("plate not found");
+        }
+
+        RestaurantModel restaurant = restaurantQueryPort.findById(existing.getRestaurantId());
+        if (restaurant == null) {
+            throw new DomainException("restaurant not found");
+        }
+        if (!restaurant.getOwnerId().equals(ownerId)) {
+            throw new DomainException("only the restaurant owner can update plates");
+        }
+
+        existing.setActive(active);
+        return platePersistencePort.save(existing);
+    }
 }

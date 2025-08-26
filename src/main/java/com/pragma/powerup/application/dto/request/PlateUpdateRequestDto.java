@@ -14,12 +14,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PlateUpdateRequestDto {
 
-    @NotNull
-    @Positive
-    @Min(1)
-    private Integer price;
+  @NotNull
+  @Positive
+  @Min(1)
+  private Integer price;
 
-    @NotBlank
-    @Size(max = 1000)
-    private String description;
+  @NotBlank
+  @Size(max = 1000)
+  private String description;
 }

@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
 import com.pragma.powerup.application.dto.request.PlateCreateRequestDto;
+import com.pragma.powerup.application.dto.request.PlateStatusUpdateRequestDto;
 import com.pragma.powerup.application.dto.request.PlateUpdateRequestDto;
 import com.pragma.powerup.application.dto.response.PlateResponseDto;
 import com.pragma.powerup.application.handler.IPlateHandler;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -48,6 +50,18 @@ public class PlateRestController {
 
         Long ownerId = Long.valueOf(httpRequest.getHeader("X-User-Id"));
         PlateResponseDto response = plateHandler.update(id, request, ownerId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('" + RoleConstants.OWNER + "')")
+    public ResponseEntity<PlateResponseDto> updateStatus(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody PlateStatusUpdateRequestDto request,
+            HttpServletRequest httpRequest) {
+
+        Long ownerId = Long.valueOf(httpRequest.getHeader("X-User-Id"));
+        PlateResponseDto response = plateHandler.updateStatus(id, request, ownerId);
         return ResponseEntity.ok(response);
     }
 }
