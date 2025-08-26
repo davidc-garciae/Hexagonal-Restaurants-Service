@@ -1,13 +1,17 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pragma.powerup.application.dto.request.RestaurantCreateRequestDto;
+import com.pragma.powerup.application.dto.response.RestaurantListItemDto;
 import com.pragma.powerup.application.dto.response.RestaurantResponseDto;
 import com.pragma.powerup.application.handler.IRestaurantHandler;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,15 +23,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(RestaurantRestController.class)
+@WebMvcTest(controllers = RestaurantRestController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class RestaurantRestControllerWebMvcTest {
 
-  @Autowired private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-  @Autowired private IRestaurantHandler restaurantHandler;
+  @Autowired
+  private IRestaurantHandler restaurantHandler;
 
   @TestConfiguration
   static class TestConfig {
@@ -35,6 +42,19 @@ class RestaurantRestControllerWebMvcTest {
     IRestaurantHandler restaurantHandler() {
       return Mockito.mock(IRestaurantHandler.class);
     }
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/restaurants returns 200")
+  void listRestaurants_ok() throws Exception {
+    var item = new RestaurantListItemDto();
+    item.setName("A");
+    item.setLogoUrl("http://logo.png");
+    Mockito.when(restaurantHandler.list(anyInt(), anyInt())).thenReturn(List.of(item));
+
+    mockMvc
+        .perform(get("/api/v1/restaurants").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
   }
 
   @Test

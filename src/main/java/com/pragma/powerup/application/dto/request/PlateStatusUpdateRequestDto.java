@@ -9,6 +9,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PlateStatusUpdateRequestDto {
-    @NotNull
-    private Boolean active;
+  @NotNull private Boolean active;
 }

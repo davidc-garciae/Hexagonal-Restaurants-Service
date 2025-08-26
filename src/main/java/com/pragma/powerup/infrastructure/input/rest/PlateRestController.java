@@ -25,43 +25,43 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class PlateRestController {
 
-    private final IPlateHandler plateHandler;
+  private final IPlateHandler plateHandler;
 
-    @PostMapping
-    @PreAuthorize("hasRole('" + RoleConstants.OWNER + "')")
-    public ResponseEntity<PlateResponseDto> create(
-            @Valid @RequestBody PlateCreateRequestDto request,
-            HttpServletRequest httpRequest,
-            UriComponentsBuilder uriBuilder) {
+  @PostMapping
+  @PreAuthorize("hasRole('" + RoleConstants.OWNER + "')")
+  public ResponseEntity<PlateResponseDto> create(
+      @Valid @RequestBody PlateCreateRequestDto request,
+      HttpServletRequest httpRequest,
+      UriComponentsBuilder uriBuilder) {
 
-        Long ownerId = Long.valueOf(httpRequest.getHeader("X-User-Id"));
-        PlateResponseDto response = plateHandler.create(request, ownerId);
-        return ResponseEntity.created(
-                uriBuilder.path("/api/v1/plates/{id}").buildAndExpand(response.getId()).toUri())
-                .body(response);
-    }
+    Long ownerId = Long.valueOf(httpRequest.getHeader("X-User-Id"));
+    PlateResponseDto response = plateHandler.create(request, ownerId);
+    return ResponseEntity.created(
+            uriBuilder.path("/api/v1/plates/{id}").buildAndExpand(response.getId()).toUri())
+        .body(response);
+  }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('" + RoleConstants.OWNER + "')")
-    public ResponseEntity<PlateResponseDto> update(
-            @PathVariable("id") Long id,
-            @Valid @RequestBody PlateUpdateRequestDto request,
-            HttpServletRequest httpRequest) {
+  @PutMapping("/{id}")
+  @PreAuthorize("hasRole('" + RoleConstants.OWNER + "')")
+  public ResponseEntity<PlateResponseDto> update(
+      @PathVariable("id") Long id,
+      @Valid @RequestBody PlateUpdateRequestDto request,
+      HttpServletRequest httpRequest) {
 
-        Long ownerId = Long.valueOf(httpRequest.getHeader("X-User-Id"));
-        PlateResponseDto response = plateHandler.update(id, request, ownerId);
-        return ResponseEntity.ok(response);
-    }
+    Long ownerId = Long.valueOf(httpRequest.getHeader("X-User-Id"));
+    PlateResponseDto response = plateHandler.update(id, request, ownerId);
+    return ResponseEntity.ok(response);
+  }
 
-    @PatchMapping("/{id}/status")
-    @PreAuthorize("hasRole('" + RoleConstants.OWNER + "')")
-    public ResponseEntity<PlateResponseDto> updateStatus(
-            @PathVariable("id") Long id,
-            @Valid @RequestBody PlateStatusUpdateRequestDto request,
-            HttpServletRequest httpRequest) {
+  @PatchMapping("/{id}/status")
+  @PreAuthorize("hasRole('" + RoleConstants.OWNER + "')")
+  public ResponseEntity<PlateResponseDto> updateStatus(
+      @PathVariable("id") Long id,
+      @Valid @RequestBody PlateStatusUpdateRequestDto request,
+      HttpServletRequest httpRequest) {
 
-        Long ownerId = Long.valueOf(httpRequest.getHeader("X-User-Id"));
-        PlateResponseDto response = plateHandler.updateStatus(id, request, ownerId);
-        return ResponseEntity.ok(response);
-    }
+    Long ownerId = Long.valueOf(httpRequest.getHeader("X-User-Id"));
+    PlateResponseDto response = plateHandler.updateStatus(id, request, ownerId);
+    return ResponseEntity.ok(response);
+  }
 }

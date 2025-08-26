@@ -9,6 +9,29 @@ security:
   - bearerAuth: []
 paths:
   /api/v1/restaurants:
+    get:
+      tags: [Restaurants]
+      summary: List restaurants (public)
+      description: Returns restaurants ordered alphabetically by name. Only fields name and logoUrl are returned.
+      security: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, default: 0, minimum: 0 }
+        - in: query
+          name: size
+          required: false
+          schema: { type: integer, default: 10, minimum: 1 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestaurantListItem'
     post:
       tags: [Restaurants]
       summary: Create restaurant (ADMIN)
@@ -237,6 +260,12 @@ components:
         phone: { type: string }
         logoUrl: { type: string }
         ownerId: { type: integer, format: int64 }
+
+    RestaurantListItem:
+      type: object
+      properties:
+        name: { type: string }
+        logoUrl: { type: string }
 
     PlateCreateRequest:
       type: object

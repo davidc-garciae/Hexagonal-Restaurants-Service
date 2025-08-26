@@ -18,27 +18,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PlateHandler implements IPlateHandler {
 
-    private final IPlateServicePort plateServicePort;
-    private final IPlateRequestMapper requestMapper;
-    private final IPlateResponseMapper responseMapper;
+  private final IPlateServicePort plateServicePort;
+  private final IPlateRequestMapper requestMapper;
+  private final IPlateResponseMapper responseMapper;
 
-    @Override
-    public PlateResponseDto create(PlateCreateRequestDto requestDto, Long ownerId) {
-        PlateModel model = requestMapper.toModel(requestDto);
-        return responseMapper.toDto(plateServicePort.createPlate(model, ownerId));
-    }
+  @Override
+  public PlateResponseDto create(PlateCreateRequestDto requestDto, Long ownerId) {
+    PlateModel model = requestMapper.toModel(requestDto);
+    return responseMapper.toDto(plateServicePort.createPlate(model, ownerId));
+  }
 
-    @Override
-    public PlateResponseDto update(Long plateId, PlateUpdateRequestDto requestDto, Long ownerId) {
-        PlateModel updated = plateServicePort.updatePlate(
-                plateId, requestDto.getPrice(), requestDto.getDescription(), ownerId);
-        return responseMapper.toDto(updated);
-    }
+  @Override
+  public PlateResponseDto update(Long plateId, PlateUpdateRequestDto requestDto, Long ownerId) {
+    PlateModel updated =
+        plateServicePort.updatePlate(
+            plateId, requestDto.getPrice(), requestDto.getDescription(), ownerId);
+    return responseMapper.toDto(updated);
+  }
 
-    @Override
-    public PlateResponseDto updateStatus(
-            Long plateId, PlateStatusUpdateRequestDto requestDto, Long ownerId) {
-        PlateModel updated = plateServicePort.setPlateActive(plateId, requestDto.getActive(), ownerId);
-        return responseMapper.toDto(updated);
-    }
+  @Override
+  public PlateResponseDto updateStatus(
+      Long plateId, PlateStatusUpdateRequestDto requestDto, Long ownerId) {
+    PlateModel updated = plateServicePort.setPlateActive(plateId, requestDto.getActive(), ownerId);
+    return responseMapper.toDto(updated);
+  }
 }

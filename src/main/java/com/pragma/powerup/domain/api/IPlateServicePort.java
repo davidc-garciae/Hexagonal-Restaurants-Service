@@ -3,9 +3,9 @@ package com.pragma.powerup.domain.api;
 import com.pragma.powerup.domain.model.PlateModel;
 
 public interface IPlateServicePort {
-    PlateModel createPlate(PlateModel plate, Long ownerId);
+  PlateModel createPlate(PlateModel plate, Long ownerId);
 
-    PlateModel updatePlate(Long plateId, Integer price, String description, Long ownerId);
+  PlateModel updatePlate(Long plateId, Integer price, String description, Long ownerId);
 
-    PlateModel setPlateActive(Long plateId, boolean active, Long ownerId);
+  PlateModel setPlateActive(Long plateId, boolean active, Long ownerId);
 }
