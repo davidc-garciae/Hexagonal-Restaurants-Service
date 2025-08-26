@@ -34,8 +34,7 @@ class UpdatePlateUseCaseTest {
     when(platePersistencePort.save(any()))
         .thenAnswer(
             inv -> {
-              PlateModel m = inv.getArgument(0);
-              return m;
+                return inv.<PlateModel>getArgument(0);
             });
 
     PlateModel updated = useCase.updatePlate(1L, 25, "new desc", 10L);

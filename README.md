@@ -85,3 +85,61 @@ Variables relevantes (application.yml/env)
 -   Diagramas HU: `docs/diagrams/HU/` (HU002, HU003, HU004, HU007, HU009, HU010)
 -   Requisitos: `docs/Requirements.md`
 -   Guía ampliada: `docs/README.microservicios.md`
+
+### Integraciones con otros microservicios
+
+-   Dependencias síncronas (salientes)
+
+    -   users-service (requerido): validaciones de usuarios/roles para operaciones de restaurantes
+        -   ¿Para qué? Validar que `ownerId` tenga rol OWNER; validar usuarios activos si se requiere.
+        -   Implementación pendiente en este servicio: reemplazar el stub `UsersServiceAdapter` por un cliente Feign.
+        -   Requisitos:
+            -   Dependencia: `org.springframework.cloud:spring-cloud-starter-openfeign`
+            -   Configuración `application.yml` (timeouts y URL):
+                ```yaml
+                feign:
+                    client:
+                        config:
+                            default:
+                                connectTimeout: 3000
+                                readTimeout: 5000
+                                loggerLevel: basic
+                microservices:
+                    users:
+                        url: ${MICROSERVICES_USERS_URL:http://localhost:8081}
+                ```
+            -   Variables de entorno: `MICROSERVICES_USERS_URL=http://localhost:8081`
+            -   Interfaz Feign sugerida:
+                ```java
+                @FeignClient(name = "users-service", url = "${microservices.users.url}")
+                interface UsersServiceClient {
+                  @GetMapping("/api/v1/usuarios/{id}")
+                  UsuarioResponseDto getUser(@PathVariable Long id);
+                  @GetMapping("/api/v1/usuarios/{id}/activo")
+                  Boolean isActive(@PathVariable Long id);
+                }
+                ```
+
+-   Endpoints expuestos para otros servicios
+
+    -   orders-service: usa `GET /api/v1/plates/restaurant/{id}` para obtener menú activo por restaurante.
+    -   Frontends/Gateway: `GET /api/v1/restaurants` para catálogo de restaurantes.
+
+-   Seguridad y Gateway
+
+    -   Requiere que el Gateway valide JWT y propague `X-User-*`.
+    -   Este servicio asume esos headers para autorización (`@PreAuthorize`).
+
+-   Asíncrono (mensajería)
+
+    -   No aplica en este servicio (no publica ni consume eventos actualmente).
+
+-   Opcional (si usas Service Discovery/Config Server)
+
+    -   Service Discovery (Eureka): registrar el servicio y usar `lb://users-service` en lugar de URL fija.
+    -   Config Server: externalizar propiedades y rutas Feign.
+
+-   Faltante para producción (checklist)
+    -   [ ] Agregar `spring-cloud-starter-openfeign` y el cliente a users-service
+    -   [ ] Manejo de errores/resiliencia (fallbacks o circuit breaker si aplica)
+    -   [ ] Métricas y logs de integraciones (timings/errores Feign)
