@@ -1,16 +1,20 @@
 package com.pragma.powerup.infrastructure.configuration;
 
+import com.pragma.powerup.domain.api.IPlateQueryServicePort;
 import com.pragma.powerup.domain.api.IPlateServicePort;
 import com.pragma.powerup.domain.api.IRestaurantQueryServicePort;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.spi.IPlatePersistencePort;
+import com.pragma.powerup.domain.spi.IPlateQueryPort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantQueryPort;
 import com.pragma.powerup.domain.spi.IUserServicePort;
+import com.pragma.powerup.domain.usecase.PlateQueryUseCase;
 import com.pragma.powerup.domain.usecase.PlateUseCase;
 import com.pragma.powerup.domain.usecase.RestaurantQueryUseCase;
 import com.pragma.powerup.domain.usecase.RestaurantUseCase;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.PlateJpaAdapter;
+import com.pragma.powerup.infrastructure.out.jpa.adapter.PlateQueryJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.RestaurantJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.RestaurantQueryJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IPlateEntityMapper;
@@ -61,6 +65,16 @@ public class BeanConfiguration {
   @Bean
   public IPlateServicePort plateServicePort() {
     return new PlateUseCase(platePersistencePort(), restaurantQueryPort());
+  }
+
+  @Bean
+  public IPlateQueryPort plateQueryPort() {
+    return new PlateQueryJpaAdapter(plateRepository, plateEntityMapper);
+  }
+
+  @Bean
+  public IPlateQueryServicePort plateQueryServicePort() {
+    return new PlateQueryUseCase(plateQueryPort());
   }
 
   @Bean

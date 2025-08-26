@@ -29,14 +29,16 @@ public class RestaurantRestController {
       @Valid @RequestBody RestaurantCreateRequestDto request, UriComponentsBuilder uriBuilder) {
     RestaurantResponseDto response = restaurantHandler.create(request);
     return ResponseEntity.created(
-        uriBuilder.path("/api/v1/restaurants/{id}").buildAndExpand(response.getId()).toUri())
+            uriBuilder.path("/api/v1/restaurants/{id}").buildAndExpand(response.getId()).toUri())
         .body(response);
   }
 
   @GetMapping
-  public ResponseEntity<java.util.List<com.pragma.powerup.application.dto.response.RestaurantListItemDto>> list(
-      @RequestParam(name = "page", defaultValue = "0") int page,
-      @RequestParam(name = "size", defaultValue = "10") int size) {
+  public ResponseEntity<
+          java.util.List<com.pragma.powerup.application.dto.response.RestaurantListItemDto>>
+      list(
+          @RequestParam(name = "page", defaultValue = "0") int page,
+          @RequestParam(name = "size", defaultValue = "10") int size) {
     var list = restaurantHandler.list(page, size);
     return ResponseEntity.ok(list);
   }

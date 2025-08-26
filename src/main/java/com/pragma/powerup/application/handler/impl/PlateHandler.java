@@ -7,8 +7,11 @@ import com.pragma.powerup.application.dto.response.PlateResponseDto;
 import com.pragma.powerup.application.handler.IPlateHandler;
 import com.pragma.powerup.application.mapper.IPlateRequestMapper;
 import com.pragma.powerup.application.mapper.IPlateResponseMapper;
+import com.pragma.powerup.domain.api.IPlateQueryServicePort;
 import com.pragma.powerup.domain.api.IPlateServicePort;
+import com.pragma.powerup.domain.model.PlateCategory;
 import com.pragma.powerup.domain.model.PlateModel;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlateHandler implements IPlateHandler {
 
   private final IPlateServicePort plateServicePort;
+  private final IPlateQueryServicePort plateQueryServicePort;
   private final IPlateRequestMapper requestMapper;
   private final IPlateResponseMapper responseMapper;
 
@@ -30,9 +34,8 @@ public class PlateHandler implements IPlateHandler {
 
   @Override
   public PlateResponseDto update(Long plateId, PlateUpdateRequestDto requestDto, Long ownerId) {
-    PlateModel updated =
-        plateServicePort.updatePlate(
-            plateId, requestDto.getPrice(), requestDto.getDescription(), ownerId);
+    PlateModel updated = plateServicePort.updatePlate(
+        plateId, requestDto.getPrice(), requestDto.getDescription(), ownerId);
     return responseMapper.toDto(updated);
   }
 
@@ -41,5 +44,12 @@ public class PlateHandler implements IPlateHandler {
       Long plateId, PlateStatusUpdateRequestDto requestDto, Long ownerId) {
     PlateModel updated = plateServicePort.setPlateActive(plateId, requestDto.getActive(), ownerId);
     return responseMapper.toDto(updated);
+  }
+
+  @Override
+  public List<PlateResponseDto> listByRestaurant(
+      Long restaurantId, PlateCategory category, int page, int size) {
+    var models = plateQueryServicePort.listActiveByRestaurant(restaurantId, category, page, size);
+    return models.stream().map(responseMapper::toDto).toList();
   }
 }

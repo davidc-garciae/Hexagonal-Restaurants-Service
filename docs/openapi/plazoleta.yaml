@@ -215,6 +215,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/plates/restaurant/{id}:
+    get:
+      tags: [Plates]
+      summary: List active plates by restaurant (public)
+      description: Returns active plates for a restaurant, optionally filtered by category, ordered by name.
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer, format: int64 }
+        - in: query
+          name: category
+          required: false
+          schema: { $ref: '#/components/schemas/PlateCategory' }
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, default: 0, minimum: 0 }
+        - in: query
+          name: size
+          required: false
+          schema: { type: integer, default: 10, minimum: 1 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlateResponse'
+
 components:
   securitySchemes:
     bearerAuth:

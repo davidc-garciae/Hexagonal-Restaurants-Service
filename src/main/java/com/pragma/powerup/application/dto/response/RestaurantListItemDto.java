@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RestaurantListItemDto {
-    private String name;
-    private String logoUrl;
+  private String name;
+  private String logoUrl;
 }

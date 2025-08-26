@@ -19,18 +19,19 @@ public class SecurityConfiguration {
     http.csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers(
-                        "/actuator/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/v3/api-docs/**",
-                        "/v3/api-docs.yaml",
-                        "/api/v1/auth/login",
-                        "/api/v1/users/customer")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
+            auth -> auth.requestMatchers(
+                "/actuator/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/v3/api-docs/**",
+                "/v3/api-docs.yaml",
+                "/api/v1/auth/login",
+                "/api/v1/users/customer",
+                "/api/v1/restaurants",
+                "/api/v1/plates/restaurant/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated())
         .addFilterBefore(headerFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }

@@ -27,14 +27,11 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc(addFilters = false)
 class RestaurantRestControllerWebMvcTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-  @Autowired
-  private IRestaurantHandler restaurantHandler;
+  @Autowired private IRestaurantHandler restaurantHandler;
 
   @TestConfiguration
   static class TestConfig {
