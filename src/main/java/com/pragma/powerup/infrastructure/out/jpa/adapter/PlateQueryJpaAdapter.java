@@ -14,21 +14,22 @@ import org.springframework.data.domain.Sort;
 @RequiredArgsConstructor
 public class PlateQueryJpaAdapter implements IPlateQueryPort {
 
-    private final IPlateRepository repository;
-    private final IPlateEntityMapper mapper;
+  private final IPlateRepository repository;
+  private final IPlateEntityMapper mapper;
 
-    @Override
-    public List<PlateModel> findActiveByRestaurant(
-            Long restaurantId, PlateCategory category, int page, int size) {
-        var pageable = PageRequest.of(page, size, Sort.by("name").ascending());
-        List<PlateEntity> entities;
-        if (category == null) {
-            entities = repository.findByRestaurantIdAndActiveTrue(restaurantId, pageable).getContent();
-        } else {
-            entities = repository
-                    .findByRestaurantIdAndActiveTrueAndCategory(restaurantId, category, pageable)
-                    .getContent();
-        }
-        return entities.stream().map(mapper::toModel).toList();
+  @Override
+  public List<PlateModel> findActiveByRestaurant(
+      Long restaurantId, PlateCategory category, int page, int size) {
+    var pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+    List<PlateEntity> entities;
+    if (category == null) {
+      entities = repository.findByRestaurantIdAndActiveTrue(restaurantId, pageable).getContent();
+    } else {
+      entities =
+          repository
+              .findByRestaurantIdAndActiveTrueAndCategory(restaurantId, category, pageable)
+              .getContent();
     }
+    return entities.stream().map(mapper::toModel).toList();
+  }
 }

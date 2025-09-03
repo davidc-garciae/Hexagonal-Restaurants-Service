@@ -9,6 +9,7 @@ import com.pragma.powerup.application.mapper.IRestaurantRequestMapper;
 import com.pragma.powerup.application.mapper.IRestaurantResponseMapper;
 import com.pragma.powerup.domain.api.IRestaurantQueryServicePort;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
+import com.pragma.powerup.domain.exception.DomainException;
 import com.pragma.powerup.domain.model.RestaurantModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,14 @@ public class RestaurantHandler implements IRestaurantHandler {
   public java.util.List<RestaurantListItemDto> list(int page, int size) {
     var models = restaurantQueryServicePort.listRestaurants(page, size);
     return listItemMapper.toDtoList(models);
+  }
+
+  @Override
+  public RestaurantResponseDto findById(Long restaurantId) {
+    RestaurantModel model = restaurantQueryServicePort.findById(restaurantId);
+    if (model == null) {
+      throw new DomainException("Restaurant not found with id: " + restaurantId);
+    }
+    return responseMapper.toDto(model);
   }
 }

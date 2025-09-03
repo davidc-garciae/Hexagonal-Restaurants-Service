@@ -34,8 +34,9 @@ public class PlateHandler implements IPlateHandler {
 
   @Override
   public PlateResponseDto update(Long plateId, PlateUpdateRequestDto requestDto, Long ownerId) {
-    PlateModel updated = plateServicePort.updatePlate(
-        plateId, requestDto.getPrice(), requestDto.getDescription(), ownerId);
+    PlateModel updated =
+        plateServicePort.updatePlate(
+            plateId, requestDto.getPrice(), requestDto.getDescription(), ownerId);
     return responseMapper.toDto(updated);
   }
 

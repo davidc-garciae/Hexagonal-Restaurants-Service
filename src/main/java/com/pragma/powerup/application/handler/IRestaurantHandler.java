@@ -9,4 +9,6 @@ public interface IRestaurantHandler {
   RestaurantResponseDto create(RestaurantCreateRequestDto requestDto);
 
   List<RestaurantListItemDto> list(int page, int size);
+
+  RestaurantResponseDto findById(Long restaurantId);
 }

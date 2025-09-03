@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8084}
 
 spring:
   application:
@@ -28,3 +28,23 @@ otel:
   exporter:
     otlp:
       endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4317}
+
+# Microservices URLs (Feign/Integrations)
+microservices:
+  users:
+    url: ${MICROSERVICES_USERS_URL:http://localhost:8081}
+  orders:
+    url: ${MICROSERVICES_ORDERS_URL:http://localhost:8082}
+  messaging:
+    url: ${MICROSERVICES_MESSAGING_URL:http://localhost:8083}
+  restaurants:
+    url: ${MICROSERVICES_RESTAURANTS_URL:http://localhost:8084}
+
+feign:
+  clients:
+    users-service:
+      url: ${MICROSERVICES_USERS_URL:http://localhost:8081}
+
+jwt:
+  secret: ${JWT_SECRET:mi-secreto-super-seguro-para-jwt-en-todos-los-servicios-2024}
+  expiration: ${JWT_EXPIRATION:86400000}

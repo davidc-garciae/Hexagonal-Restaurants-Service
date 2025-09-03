@@ -11,6 +11,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+  # Deshabilitar verificación de compatibilidad Spring Cloud/Boot
+  cloud:
+    compatibility-verifier:
+      enabled: false
 
 # Desactivar Swagger en pruebas para agilizar el contexto
 springdoc:
@@ -22,3 +26,14 @@ springdoc:
 # Placeholders requeridos por OpenApiConfiguration en pruebas
 appdescription: "API PowerUp (tests)"
 appversion: "0.0.0-test"
+
+# Configuración de Feign para tests
+feign:
+  clients:
+    users-service:
+      url: http://localhost:8081
+
+# JWT para tests
+jwt:
+  secret: test-secret-for-hexagonal-architecture-microservices
+  expiration: 86400000

@@ -8,6 +8,7 @@ import com.pragma.powerup.domain.spi.IPlatePersistencePort;
 import com.pragma.powerup.domain.spi.IPlateQueryPort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantQueryPort;
+import com.pragma.powerup.domain.spi.IUserFeignPort;
 import com.pragma.powerup.domain.spi.IUserServicePort;
 import com.pragma.powerup.domain.usecase.PlateQueryUseCase;
 import com.pragma.powerup.domain.usecase.PlateUseCase;
@@ -32,9 +33,10 @@ public class BeanConfiguration {
   private final IRestaurantRepository restaurantRepository;
   private final IRestaurantEntityMapper restaurantEntityMapper;
 
-  // added fields
   private final IPlateRepository plateRepository;
   private final IPlateEntityMapper plateEntityMapper;
+
+  private final IUserFeignPort userFeignPort;
 
   @Bean
   public IRestaurantPersistencePort restaurantPersistencePort() {
@@ -43,7 +45,7 @@ public class BeanConfiguration {
 
   @Bean
   public IUserServicePort userServicePort() {
-    return new UsersServiceAdapter();
+    return new UsersServiceAdapter(userFeignPort);
   }
 
   @Bean

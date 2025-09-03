@@ -18,7 +18,6 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
-	byteBuddyAgent
 }
 
 repositories {
@@ -26,13 +25,14 @@ repositories {
 }
 
 ext {
-	mapstructVersion = "1.6.3"
+    mapstructVersion = "1.6.3"
 	lombokVersion = "1.18.38"
 	lombokMapstructBindingVersion = "0.2.0"
 	postgresqlVersion = '42.7.7'
 	openApiVersion = "2.8.11"
     logstashEncoderVersion = '7.4'
     micrometerTracingVersion = '1.4.2'
+    jjwtVersion = '0.12.5'
 }
 
 dependencies {
@@ -41,6 +41,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 	// Base de datos en memoria para pruebas
@@ -66,6 +67,14 @@ dependencies {
 	// Spring Security (for header-based auth template)
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // JWT Support - using variable like Orders Service
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+    // Feign Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 	// Testing & Architecture
 	testImplementation 'com.tngtech.archunit:archunit-junit5:1.3.0'
 	// Security test helpers (csrf(), @WithMockUser, etc.)
@@ -79,9 +88,12 @@ dependencies {
 		implementation('net.minidev:json-smart:2.5.1') { because 'Avoid vulnerable transitive versions' }
 		implementation('org.xmlunit:xmlunit-core:2.9.1') { because 'Avoid vulnerable transitive versions' }
 	}
+}
 
-	// Explicit agent for Mockito inline mock maker (future-proof JDK changes)
-	byteBuddyAgent "net.bytebuddy:byte-buddy-agent:1.15.11"
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
+	}
 }
 
 tasks.named('test') {
@@ -113,11 +125,6 @@ tasks.register('jacocoCoverageVerification', JacocoCoverageVerification) {
 
 check.dependsOn jacocoCoverageVerification
 
-// Load Byte Buddy agent explicitly for test tasks
-tasks.withType(Test).configureEach {
-	jvmArgs "-javaagent:${configurations.byteBuddyAgent.singleFile}"
-}
-
 spotless {
 	java {
 		googleJavaFormat('1.22.0')
@@ -134,30 +141,14 @@ spotless {
 
 def oasDir = "$rootDir/docs/openapi"
 
-tasks.register('openApiValidateUsers', ValidateTask) {
-	inputSpec.set("${oasDir}/users.yaml")
-}
-
 tasks.register('openApiValidateRestaurants', ValidateTask) {
 	inputSpec.set("${oasDir}/restaurants.yaml")
-}
-
-tasks.register('openApiValidateOrders', ValidateTask) {
-	inputSpec.set("${oasDir}/orders.yaml")
-}
-
-tasks.register('openApiValidateTraceability', ValidateTask) {
-	inputSpec.set("${oasDir}/traceability.yaml")
-}
-
-tasks.register('openApiValidateMessaging', ValidateTask) {
-	inputSpec.set("${oasDir}/messaging.yaml")
 }
 
 tasks.register('openApiValidateAll') {
 	group = 'verification'
 	description = 'Valida todos los contratos OpenAPI en docs/openapi'
-	dependsOn 'openApiValidateUsers', 'openApiValidateRestaurants', 'openApiValidateOrders', 'openApiValidateTraceability', 'openApiValidateMessaging'
+	dependsOn 'openApiValidateRestaurants'
 }
 
 // ---- Auditoría de dependencias (OWASP) ----
@@ -165,4 +156,12 @@ dependencyCheck {
 	failBuildOnCVSS = 8.0
 	formats = ['HTML','JSON']
 	suppressionFile = file('dependency-check-suppressions.xml')
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+        force "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+        force "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+    }
 }

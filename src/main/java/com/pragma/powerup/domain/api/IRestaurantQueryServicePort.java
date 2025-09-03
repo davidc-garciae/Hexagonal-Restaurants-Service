@@ -5,4 +5,6 @@ import java.util.List;
 
 public interface IRestaurantQueryServicePort {
   List<RestaurantModel> listRestaurants(int page, int size);
+
+  RestaurantModel findById(Long restaurantId);
 }

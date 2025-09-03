@@ -19,4 +19,9 @@ public class RestaurantQueryUseCase implements IRestaurantQueryServicePort {
     int s = Math.max(size, 1);
     return restaurantQueryPort.findAllOrderedByName(p, s);
   }
+
+  @Override
+  public RestaurantModel findById(Long restaurantId) {
+    return restaurantQueryPort.findById(restaurantId);
+  }
 }

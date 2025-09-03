@@ -3,9 +3,11 @@ package com.pragma.powerup.infrastructure.exceptionhandler;
 import com.pragma.powerup.domain.exception.DomainException;
 import com.pragma.powerup.infrastructure.exception.NoDataFoundException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -35,5 +37,16 @@ public class ControllerAdvisor {
       status = HttpStatus.FORBIDDEN;
     }
     return ResponseEntity.status(status).body(Collections.singletonMap(MESSAGE, msg));
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Map<String, String>> handleValidationException(
+      MethodArgumentNotValidException ex) {
+    Map<String, String> errors = new HashMap<>();
+    ex.getBindingResult()
+        .getFieldErrors()
+        .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+    errors.put(MESSAGE, "Validation failed");
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
 }
